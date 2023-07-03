@@ -1,6 +1,9 @@
 package com.sbp.orderservice.api.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
@@ -16,16 +19,21 @@ import com.sbp.orderservice.api.repository.OrderRepository;
 import reactor.core.publisher.Mono;
 
 @Service
+@RefreshScope
 public class OrderService {
 
 	@Autowired
 	private OrderRepository orderRepository;
 
-//	@Autowired
-//	private RestTemplate restTemplate;
-	
 	@Autowired
-	private WebClient webClient;
+	@Lazy
+	private RestTemplate restTemplate;
+	
+	@Value("${microservice.payment-service.endpoints.endpoint.uri}")
+	private String ENDPOINT_URL;
+	
+//	@Autowired
+//	private WebClient webClient;
 
 	public TransactionResponse saveOrder(TransactionRequest request) {
 		String response = "";
@@ -35,14 +43,14 @@ public class OrderService {
 		payment.setAmount(order.getPrice());
 
 		// rest call
-//		Payment paymentResponse = restTemplate.postForObject("http://PAYMENT-SERVICE/payment/doPayment", payment,
-//				Payment.class);
+		Payment paymentResponse = restTemplate.postForObject(ENDPOINT_URL, payment,
+				Payment.class);
 		
-		Payment paymentResponse = webClient.post().uri("/doPayment")
-				.body(Mono.just(payment), Payment.class)
-				.retrieve()
-				.bodyToMono(Payment.class)
-				.block();
+//		Payment paymentResponse = webClient.post().uri("/doPayment")
+//				.body(Mono.just(payment), Payment.class)
+//				.retrieve()
+//				.bodyToMono(Payment.class)
+//				.block();
 		
 		response = paymentResponse.getPaymentStatus().equals("success")
 				? "Payment Processed Successfully and Order Placed"

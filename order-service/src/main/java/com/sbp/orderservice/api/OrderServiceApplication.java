@@ -26,32 +26,32 @@ public class OrderServiceApplication {
 		SpringApplication.run(OrderServiceApplication.class, args);
 	}
 	
-//	@Bean
-//	@LoadBalanced
-//	public RestTemplate restTemplate() {
-//		RestTemplate rst = new RestTemplate();
-//		return rst;
-//	}
+	@Bean
+	@LoadBalanced
+	public RestTemplate restTemplate() {
+		RestTemplate rst = new RestTemplate();
+		return rst;
+	}
 	
 //	@Bean
 //	public WebClient webClient () {
 //		return WebClient.builder().build();
 //	}
 
-    @Bean
-    public WebClient getWebClient(WebClient.Builder webClientBuilder) {
-
-        return webClientBuilder
-            .clientConnector(new ReactorClientHttpConnector(getHttpClient()))
-            .baseUrl("http://localhost:8082/payment")
-            .build();
-    }
-
-    private HttpClient getHttpClient() {
-        return HttpClient.create()
-            .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 10_000)
-            .doOnConnected(conn -> conn
-                .addHandlerLast(new ReadTimeoutHandler(10))
-                .addHandlerLast(new WriteTimeoutHandler(10)));
-    }
+//    @Bean
+//    public WebClient getWebClient(WebClient.Builder webClientBuilder) {
+//
+//        return webClientBuilder
+//            .clientConnector(new ReactorClientHttpConnector(getHttpClient()))
+//            .baseUrl("http://localhost:8082/payment")
+//            .build();
+//    }
+//
+//    private HttpClient getHttpClient() {
+//        return HttpClient.create()
+//            .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 10_000)
+//            .doOnConnected(conn -> conn
+//                .addHandlerLast(new ReadTimeoutHandler(10))
+//                .addHandlerLast(new WriteTimeoutHandler(10)));
+//    }
 }
